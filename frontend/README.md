@@ -1,59 +1,40 @@
-# Frontend
+# Frontend Architecture & Workspace Guide
+Welcome to the Clarity Frontend! This is a modern Single Page Application (SPA) built with **Angular 17+** using **Standalone Components** and native CSS variables for dynamic theming.
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.1.
+This document explains the overarching workspace structure and build configurations.
 
-## Development server
+## Workspace Structure
 
-To start a local development server, run:
-
-```bash
-ng serve
+```text
+frontend/
+├── angular.json       # The Master Configuration File
+├── Dockerfile         # Nginx Deployment Blueprint
+├── package.json       # NPM Dependencies & Scripts
+├── nginx.conf         # Web Server Routing Rules
+└── src/               # Application Source Code
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## 1. `angular.json`
+This is the command center for the entire Angular CLI. It defines how the application is compiled, served, and tested.
+*   **Builder Engine:** By default, it uses the modern `@angular/build:application` which leverages Esbuild for lightning-fast compilation compared to older Webpack builds.
+*   **Assets Array:** Dictates which static folders (like `public/` and `src/assets/`) should be physically copied into the final production deployment. This is how our `logo.png` makes it to the live server!
+*   **Styles Layout:** Defines `src/styles.css` as the global stylesheet injected into the root HTML before any component loads.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## 2. Component Architecture (`src/app/`)
+We strictly follow a modular, scalable folder convention to keep the codebase clean:
 
-```bash
-ng generate component component-name
-```
+*   **`core/`**: Contains singleton services (HTTP calls, Timers), data models, and interceptors (JWT injection). These are instantiated ONCE when the app loads.
+*   **`shared/`**: Presentational "dumb" components (Navbar, Footer, Habit Cards). They don't fetch their own data; they rely on `@Input()` and `@Output()` to communicate with the features that host them.
+*   **`features/`**: The distinct "pages" of the application (Dashboard, Tasks, Pomodoro, Analytics). These are "smart" components that inject Core services, fetch data, and arrange Shared components.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 3. Styling & Theming (`src/styles.css`)
+We use **Vanilla CSS with CSS Variables (`--var`)** to manage our Design System. 
+By defining variables on the `:root` pseudo-selector, we establish a Dark Mode default. The light mode is dynamically achieved by the `ThemeService` attaching a `[data-theme='light']` attribute to the `<body>` tag, which instantly overrides the global variables and cascades new colors to every component in the DOM without writing duplicate CSS!
 
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## 4. `nginx.conf` & `Dockerfile`
+Since Angular is a Single Page Application, it only consists of one actual HTML file (`index.html`). 
+*   If a user directly navigates to `clarity.com/tasks`, the browser asks the server for a folder named `/tasks`, which doesn't exist!
+*   The `nginx.conf` contains a crucial `try_files $uri $uri/ /index.html;` directive. It tells Nginx: "If you can't find the file the user asked for, just serve `index.html` and let Angular's internal JavaScript router handle showing the correct component."
+*   The `Dockerfile` handles a multi-stage build: compiling the Typescript down to raw JS/HTML, then copying only those lightweight output files into a hardened Nginx alpine image for serving.
