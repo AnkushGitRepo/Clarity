@@ -1,0 +1,92 @@
+<div class="dashboard-page grid" style="grid-template-columns: 1fr; gap: 2rem;">
+
+    <div class="habits-section">
+        <div class="header-section" style="display: flex; justify-content: flex-end; align-items: center; border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
+            <p class="subtitle" style="margin: 0; font-weight: 500;">{{ todayDisplay }}</p>
+        </div>
+
+        <div class="habits-list">
+            <h3 class="section-title">Your Habits</h3>
+
+            <div class="grid habit-grid mt-4" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
+                <!-- Add New Habit Special Card -->
+                <div class="card add-habit-card" (click)="openModal()">
+                    <div class="add-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </div>
+                    <h3>Add Habit</h3>
+                </div>
+
+                <!-- Existing Habits -->
+                <app-habit-card *ngFor="let habit of habits" [habit]="habit" [isCompleted]="isHabitCompleted(habit.id!)"
+                    (toggleCompletion)="onToggleHabit($event)"
+                    (edit)="openModal($event)"
+                    (delete)="deleteHabit($event)">
+                </app-habit-card>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal Overlay for Create/Edit -->
+<div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
+    <div class="modal-content card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3>{{ isEditing ? 'Edit Habit' : 'Create a New Habit' }}</h3>
+            <button class="btn-icon" (click)="closeModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <form (ngSubmit)="saveHabit()">
+            <div class="form-group">
+                <label for="title">Habit Title</label>
+                <input type="text" id="title" [(ngModel)]="currentHabit.title" name="title" required
+                    placeholder="e.g. Read 30 minutes">
+            </div>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label>Color</label>
+                    <div class="color-options">
+                        <div *ngFor="let pc of presetColors" 
+                             class="color-swatch"
+                             [style.backgroundColor]="pc" 
+                             [class.selected]="currentHabit.color === pc"
+                             (click)="currentHabit.color = pc">
+                        </div>
+                        <div class="color-swatch custom-color-wrapper"
+                             [class.selected]="!presetColors.includes(currentHabit.color)">
+                            <div class="custom-color-indicator" [style.backgroundColor]="!presetColors.includes(currentHabit.color) ? currentHabit.color : '#ffffff'"></div>
+                            <input type="color" class="custom-color-input" [(ngModel)]="currentHabit.color" name="color">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="frequency">Repeat</label>
+                    <select id="frequency" [(ngModel)]="currentHabit.frequency" name="frequency">
+                        <option value="Daily">Daily</option>
+                        <option value="Weekly">Weekly</option>
+                        <option value="Weekdays">Weekdays</option>
+                        <option value="Weekends">Weekends</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="desc">Description (Optional)</label>
+                <textarea id="desc" [(ngModel)]="currentHabit.description" name="description" rows="3"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" [disabled]="!currentHabit.title">Save Habit</button>
+            </div>
+        </form>
+    </div>
+</div>

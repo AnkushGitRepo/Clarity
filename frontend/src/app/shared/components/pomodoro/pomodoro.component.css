@@ -1,0 +1,122 @@
+.pomodoro-container {
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.pomodoro-container.break-mode {
+    background-color: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.pomodoro-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.timer-display {
+    font-size: 5rem;
+    font-weight: 700;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    margin-bottom: 2rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.duration-settings {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.setting-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: var(--bg-color);
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+}
+
+.duration-label {
+    font-weight: 600;
+    min-width: 60px;
+}
+
+.habit-tagging {
+    margin-bottom: 1.5rem;
+}
+
+.habit-select {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.habit-select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.mode-toggles {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.phase-toggles {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 0 auto;
+}
+
+.phase-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+}
+
+.phase-btn.active-phase {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.manual-time-input {
+    width: 60px;
+    border: none;
+    background: transparent;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: center;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--border-color);
+    outline: none;
+}
+
+.manual-time-input:focus {
+    border-color: var(--primary-color);
+}
+
+
+
+.timer-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}

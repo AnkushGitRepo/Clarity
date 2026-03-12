@@ -1,0 +1,83 @@
+.habit-item {
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.habit-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.habit-item.completed {
+    opacity: 0.8;
+}
+
+.habit-item.completed .habit-header {
+    background-color: var(--success-color) !important;
+}
+
+.habit-header {
+    padding: 1rem;
+    color: white;
+}
+
+.habit-header h4 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.habit-body {
+    padding: 1.25rem;
+    flex: 1;
+}
+
+.habit-desc {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    min-height: 2.7rem;
+}
+
+.streak-info {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.streak-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.streak-stat .label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    letter-spacing: 0.05em;
+}
+
+.streak-stat .value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.habit-actions {
+    padding: 1rem 1.25rem;
+    background-color: var(--bg-color);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}

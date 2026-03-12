@@ -1,0 +1,56 @@
+<div class="card pomodoro-container" [class.break-mode]="timerService.phase === 'break' && timerService.mode === 'pomodoro'">
+    
+    <!-- Mode Toggles -->
+    <div class="mode-toggles mb-3">
+        <button class="btn btn-sm" [class.btn-primary]="timerService.mode === 'pomodoro'" [class.btn-outline]="timerService.mode !== 'pomodoro'" (click)="setMode('pomodoro')">Pomodoro</button>
+        <button class="btn btn-sm" [class.btn-primary]="timerService.mode === 'stopwatch'" [class.btn-outline]="timerService.mode !== 'stopwatch'" (click)="setMode('stopwatch')">Stopwatch</button>
+    </div>
+
+    <div class="pomodoro-header" *ngIf="timerService.mode === 'pomodoro'">
+        <div class="phase-toggles">
+            <button class="btn btn-sm phase-btn" [class.active-phase]="timerService.phase === 'work'" (click)="setPhase('work')">Focus</button>
+            <button class="btn btn-sm phase-btn" [class.active-phase]="timerService.phase === 'break'" (click)="setPhase('break')">Break</button>
+        </div>
+    </div>
+    
+    <div class="pomodoro-header" *ngIf="timerService.mode === 'stopwatch'">
+        <h3>Stopwatch Focus</h3>
+    </div>
+
+    <!-- Duration Settings -->
+    <div class="duration-settings" *ngIf="!timerService.isRunning && timerService.mode === 'pomodoro'">
+        <div class="setting-group" *ngIf="timerService.phase === 'work'">
+            <label>Focus Min: </label>
+            <input type="number" class="manual-time-input" [value]="timerService.workDuration" (change)="onWorkDurationChange($event)" min="1" max="180">
+        </div>
+        <div class="setting-group" *ngIf="timerService.phase === 'break'">
+            <label>Break Min: </label>
+            <input type="number" class="manual-time-input" [value]="timerService.breakDuration" (change)="onBreakDurationChange($event)" min="1" max="60">
+        </div>
+    </div>
+
+    <div class="timer-display">
+        {{ formattedTime }}
+    </div>
+
+    <!-- Habit Tagging -->
+    <div class="habit-tagging form-group" *ngIf="timerService.mode === 'stopwatch' || timerService.phase === 'work'">
+        <select class="habit-select" [(ngModel)]="timerService.selectedHabitId" [disabled]="timerService.isRunning">
+            <option [ngValue]="null">Select a habit to focus on...</option>
+            <option *ngFor="let habit of habits" [value]="habit.id">{{ habit.title }}</option>
+        </select>
+    </div>
+
+    <div class="timer-controls">
+        <button class="btn start-btn" [class.btn-primary]="!timerService.isRunning" [class.btn-outline]="timerService.isRunning"
+            (click)="timerService.isRunning ? timerService.pause() : timerService.start()">
+            {{ timerService.isRunning ? 'Pause' : 'Start' }}
+        </button>
+        
+        <button class="btn btn-outline" (click)="timerService.reset()">Reset</button>
+
+        <button *ngIf="timerService.mode === 'stopwatch' && timerService.elapsedTime > 0" class="btn btn-success" (click)="timerService.finishStopwatchSession()">
+            Log Session
+        </button>
+    </div>
+</div>

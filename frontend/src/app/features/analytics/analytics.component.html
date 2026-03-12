@@ -1,0 +1,90 @@
+<div class="analytics-page">
+    <div class="header-section">
+        <h2>Analytics & Progress</h2>
+        <p class="subtitle">Track your consistency over time</p>
+    </div>
+
+    <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem;">
+        <div class="card summary-card">
+            <h3>Total Habits</h3>
+            <div class="stat-number">{{ summary.totalHabits }}</div>
+        </div>
+        <div class="card summary-card">
+            <h3>Total Completions</h3>
+            <div class="stat-number text-success">{{ summary.totalCompletions }}</div>
+        </div>
+    </div>
+
+    <div class="card heatmap-section">
+        <h3>Activity Heatmap (Last 30 Days)</h3>
+        <div class="heatmap-grid mt-4">
+            <div class="heatmap-box" *ngFor="let day of last30Days"
+                [style.backgroundColor]="getColorIntensity(day.count)"
+                [title]="day.date + ' : ' + day.count + ' habits completed'">
+            </div>
+        </div>
+        <div class="legend mt-4">
+            <span>Less</span>
+            <div class="heatmap-box" style="background-color: var(--surface-color)"></div>
+            <div class="heatmap-box" style="background-color: rgba(16, 185, 129, 0.4)"></div>
+            <div class="heatmap-box" style="background-color: rgba(16, 185, 129, 0.7)"></div>
+            <div class="heatmap-box" style="background-color: rgba(16, 185, 129, 1)"></div>
+            <span>More</span>
+        </div>
+    </div>
+
+    <!-- Pomodoro Session Log -->
+    <div class="card session-log-section mt-4">
+        <h3>Session Logs</h3>
+
+        <div class="session-list mt-4">
+            <div *ngIf="sessionLogs.length === 0" class="empty-state">
+                <p>No focus sessions recorded yet. Start a timer on your Dashboard!</p>
+            </div>
+
+            <div class="session-item" *ngFor="let session of sessionLogs">
+                <div class="session-info">
+                    <span class="session-icon">⏱️</span>
+                    <div class="session-details">
+                        <ng-container *ngIf="session.habitId; else generalSession">
+                            <strong>{{ session.durationMinutes }} min</strong> focus on {{ getHabitName(session.habitId) }}
+                        </ng-container>
+                        <ng-template #generalSession>
+                            <strong>{{ session.durationMinutes }} min</strong> general focus session
+                        </ng-template>
+                    </div>
+                </div>
+                <div class="session-date">
+                    {{ session.completedAt | date:'medium' }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Log -->
+    <div class="card session-log-section mt-4 mb-4">
+        <h3>Task Logs</h3>
+
+        <div class="session-list mt-4">
+            <div *ngIf="completedTasks.length === 0" class="empty-state">
+                <p>No tasks completed yet. Go mark some as done in the Kanban board!</p>
+            </div>
+
+            <div class="session-item" *ngFor="let task of completedTasks">
+                <div class="session-info">
+                    <span class="session-icon">✅</span>
+                    <div class="session-details">
+                        <strong>{{ task.title }}</strong>
+                        <span style="display:block; font-size: 0.8em; color: var(--text-secondary)">
+                            {{ task.type }} Goal <span *ngIf="task.deadline">• Due: {{ task.deadline | date:'mediumDate' }}</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="session-date">
+                    Completed
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

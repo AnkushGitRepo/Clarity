@@ -1,0 +1,26 @@
+<div class="card habit-item" [class.completed]="isCompleted">
+    <div class="habit-header" [style.backgroundColor]="habit.color">
+        <h4>{{ habit.title }}</h4>
+    </div>
+    <div class="habit-body">
+        <p class="habit-desc">{{ habit.description || 'No description provided.' }}</p>
+        <div class="streak-info">
+            <div class="streak-stat">
+                <span class="label">Current Streak</span>
+                <span class="value">{{ habit.streakCurrent || 0 }} <span class="fire">🔥</span></span>
+            </div>
+            <div class="streak-stat">
+                <span class="label">Longest Streak</span>
+                <span class="value">{{ habit.streakLongest || 0 }} <span class="fire">👑</span></span>
+            </div>
+        </div>
+    </div>
+    <div class="habit-actions">
+        <button class="btn btn-outline btn-sm" (click)="onEdit()">Edit</button>
+        <button class="btn btn-danger btn-sm" (click)="onDelete()">Delete</button>
+        <button class="btn w-100 mt-2" [class.btn-success]="isCompleted" [class.btn-outline]="!isCompleted"
+            (click)="onToggle()">
+            {{ isCompleted ? 'Completed ✓' : 'Mark Done' }}
+        </button>
+    </div>
+</div>

@@ -1,0 +1,184 @@
+<div class="tasks-page">
+  <div class="header-section">
+      <h2>Kanban Tasks</h2>
+      <p class="subtitle">Organize your goals from Monthly vision down to Daily execution.</p>
+  </div>
+
+  <div class="kanban-board">
+    
+    <!-- MONTHLY COLUMN -->
+    <div class="kanban-column">
+      <div class="column-header">
+        <h3>Monthly Vision</h3>
+        <button class="btn-icon" (click)="openModal(undefined, 'Monthly')">+</button>
+      </div>
+      
+      <div 
+        cdkDropList
+        #monthlyList="cdkDropList"
+        [cdkDropListData]="monthlyTasks"
+        [cdkDropListConnectedTo]="[weeklyList, dailyList]"
+        class="task-list"
+        (cdkDropListDropped)="drop($event, 'Monthly')">
+        
+        <div class="task-card" *ngFor="let task of monthlyTasks" cdkDrag>
+          <div class="task-color-bar" [style.backgroundColor]="task.color"></div>
+          <div class="task-content">
+            <div class="task-title-row">
+              <h4>{{ task.title }}</h4>
+              <button class="btn-icon btn-sm action-btn edit-btn" (click)="openModal(task)">✎</button>
+            </div>
+            <p *ngIf="task.description" class="task-desc">{{ task.description }}</p>
+            <div class="task-meta">
+              <span class="deadline" *ngIf="task.deadline">⏱ {{ task.deadline | date:'MMM d' }}</span>
+              <button class="btn btn-outline btn-xs ml-auto" (click)="markComplete(task, $event)">Done ✓</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEKLY COLUMN -->
+    <div class="kanban-column">
+      <div class="column-header">
+        <h3>Weekly Goals</h3>
+        <button class="btn-icon" (click)="openModal(undefined, 'Weekly')">+</button>
+      </div>
+      
+      <div 
+        cdkDropList
+        #weeklyList="cdkDropList"
+        [cdkDropListData]="weeklyTasks"
+        [cdkDropListConnectedTo]="[monthlyList, dailyList]"
+        class="task-list"
+        (cdkDropListDropped)="drop($event, 'Weekly')">
+        
+        <div class="task-card" *ngFor="let task of weeklyTasks" cdkDrag>
+          <div class="task-color-bar" [style.backgroundColor]="task.color"></div>
+          <div class="task-content">
+            <div class="task-title-row">
+              <h4>{{ task.title }}</h4>
+              <button class="btn-icon btn-sm action-btn edit-btn" (click)="openModal(task)">✎</button>
+            </div>
+            <p *ngIf="task.description" class="task-desc">{{ task.description }}</p>
+            <div class="task-meta flex-wrap group">
+               <span class="parent-badge" *ngIf="task.parentTaskId" [title]="'Parent: ' + getParentTitle(task.parentTaskId)">
+                 ↳ {{ getParentTitle(task.parentTaskId) | slice:0:15 }}...
+               </span>
+               <span class="deadline" *ngIf="task.deadline">⏱ {{ task.deadline | date:'MMM d' }}</span>
+               <button class="btn btn-outline btn-xs" (click)="markComplete(task, $event)">Done</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAILY COLUMN -->
+    <div class="kanban-column">
+      <div class="column-header">
+        <h3>Daily Execution</h3>
+        <button class="btn-icon" (click)="openModal(undefined, 'Daily')">+</button>
+      </div>
+      
+      <div 
+        cdkDropList
+        #dailyList="cdkDropList"
+        [cdkDropListData]="dailyTasks"
+        [cdkDropListConnectedTo]="[monthlyList, weeklyList]"
+        class="task-list"
+        (cdkDropListDropped)="drop($event, 'Daily')">
+        
+        <div class="task-card" *ngFor="let task of dailyTasks" cdkDrag>
+          <div class="task-color-bar" [style.backgroundColor]="task.color"></div>
+          <div class="task-content">
+            <div class="task-title-row">
+              <h4>{{ task.title }}</h4>
+              <button class="btn-icon btn-sm action-btn edit-btn" (click)="openModal(task)">✎</button>
+            </div>
+            <p *ngIf="task.description" class="task-desc">{{ task.description }}</p>
+            <div class="task-meta flex-wrap group">
+               <span class="parent-badge" *ngIf="task.parentTaskId" [title]="'Parent: ' + getParentTitle(task.parentTaskId)">
+                 ↳ {{ getParentTitle(task.parentTaskId) | slice:0:15 }}...
+               </span>
+               <span class="deadline" *ngIf="task.deadline">⏱ {{ task.deadline | date:'shortTime' }}</span>
+               <button class="btn btn-outline btn-xs" (click)="markComplete(task, $event)">Done</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
+  <div class="modal-content card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+          <h3>{{ isEditing ? 'Edit Task' : 'Create Task' }}</h3>
+          <button class="btn-icon" (click)="closeModal()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+          </button>
+      </div>
+      <form (ngSubmit)="saveTask()">
+          <div class="form-group">
+              <label>Task Title</label>
+              <input type="text" [(ngModel)]="currentTask.title" name="title" required>
+          </div>
+
+          <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label>Type</label>
+                <select [(ngModel)]="currentTask.type" name="type" (change)="onTypeChange()">
+                    <option value="Monthly">Monthly</option>
+                    <option value="Weekly">Weekly</option>
+                    <option value="Daily">Daily</option>
+                </select>
+            </div>
+            <div class="form-group" *ngIf="currentTask.type !== 'Monthly'">
+                <label>Parent Task (Optional)</label>
+                <select [(ngModel)]="currentTask.parentTaskId" name="parentTaskId">
+                    <option [ngValue]="null">None</option>
+                    <option *ngFor="let pt of availableParents" [value]="pt.id">{{ pt.title }} ({{ pt.type }})</option>
+                </select>
+            </div>
+          </div>
+
+          <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label>Color</label>
+                <div class="color-options" style="display:flex; gap:0.5rem; height: 32px">
+                    <div *ngFor="let pc of presetColors" 
+                         class="color-swatch"
+                         [style.backgroundColor]="pc" 
+                         [class.selected]="currentTask.color === pc"
+                         style="width:24px; height:24px; border-radius:50%; cursor:pointer;"
+                         (click)="currentTask.color = pc">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Deadline (Optional)</label>
+                <input type="datetime-local" [(ngModel)]="currentTask.deadline" name="deadline">
+            </div>
+          </div>
+
+          <div class="form-group mt-2">
+              <label>Description</label>
+              <textarea [(ngModel)]="currentTask.description" name="description" rows="2"></textarea>
+          </div>
+
+          <div class="modal-actions mt-4" style="display:flex; justify-content: space-between;">
+              <button *ngIf="isEditing && currentTask.id" type="button" class="btn btn-danger" (click)="deleteTask(currentTask.id, $event)">Delete</button>
+              <div style="margin-left:auto; display:flex; gap:1rem;">
+                <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" [disabled]="!currentTask.title">Save Task</button>
+              </div>
+          </div>
+      </form>
+  </div>
+</div>
