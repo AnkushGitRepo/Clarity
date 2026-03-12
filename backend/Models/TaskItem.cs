@@ -30,6 +30,8 @@ namespace Clarity.Api.Models
 
         public bool IsCompleted { get; set; } = false;
 
+        public DateTime? CompletedAt { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

@@ -43,7 +43,9 @@ export class AnalyticsComponent implements OnInit {
         // Fetch Completed Tasks for the new Task Logs
         this.taskService.getTasks().subscribe((tasks: any[]) => {
             this.completedTasks = tasks.filter(t => t.isCompleted).sort((a,b) => {
-                return new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime();
+                const dateB = b.completedAt ? new Date(b.completedAt) : new Date(b.createdAt || '');
+                const dateA = a.completedAt ? new Date(a.completedAt) : new Date(a.createdAt || '');
+                return dateB.getTime() - dateA.getTime();
             });
         });
     }

@@ -68,7 +68,11 @@ public class TasksController : ControllerBase
         if (request.ParentTaskId != null) existingTask.ParentTaskId = request.ParentTaskId;
         if (request.Deadline != null) existingTask.Deadline = request.Deadline;
         if (request.Color != null) existingTask.Color = request.Color;
-        if (request.IsCompleted.HasValue) existingTask.IsCompleted = request.IsCompleted.Value;
+        if (request.IsCompleted.HasValue) 
+        {
+            existingTask.IsCompleted = request.IsCompleted.Value;
+            existingTask.CompletedAt = request.IsCompleted.Value ? DateTime.UtcNow : null;
+        }
 
         await _taskService.UpdateTaskAsync(id, existingTask);
         return NoContent();

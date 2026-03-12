@@ -1,9 +1,6 @@
 <nav class="navbar" *ngIf="authService.isAuthenticated$ | async">
     <div class="navbar-brand">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2L2 22h20L12 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
-            <circle cx="12" cy="14" r="3" fill="currentColor" />
-        </svg>
+        <img src="/assets/logo.png" width="32" height="32" alt="Clarity Logo" class="navbar-logo" />
         <h2>Clarity</h2>
     </div>
     <ul class="navbar-nav">

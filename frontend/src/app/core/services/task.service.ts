@@ -12,6 +12,7 @@ export interface TaskItem {
   deadline?: string | null;
   color?: string;
   isCompleted?: boolean;
+  completedAt?: string;
   createdAt?: string;
 }
 
